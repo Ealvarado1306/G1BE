@@ -15,5 +15,6 @@ urlpatterns = [
     path('messagebox', views.messagebox, name='messagebox'),
     path('book_add/<int:book_id>', views.book_add, name='book_add'),
     path('purchase', views.purchase, name='purchase'),
+    path('my_logout', views.my_logout, name='my_logout')
 ]
 

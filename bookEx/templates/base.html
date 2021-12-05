@@ -51,7 +51,7 @@
             <span style="float: right; align: right;">
                     {% if user.is_authenticated %}
                        {{ user.username }}
-                       <a href="{% url 'logout' %}?next=/">Logout</a>
+                       <a href="{% url 'my_logout' %}?next=/">Logout</a>
                     {% else %}
                        Not Logged in
                        <a href="{% url 'login' %}?next=/">Login</a>

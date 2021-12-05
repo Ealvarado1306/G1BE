@@ -12,10 +12,10 @@ from .forms import MessageForm
 from django.http import HttpResponseRedirect
 from .models import Book
 from .models import MessageBox
-from .models import Product
 from .models import OrderItem
 from .models import Order
 
+from django.contrib.auth import logout
 from django.views.generic.edit import CreateView
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
@@ -212,7 +212,9 @@ def messagebox(request):
 @login_required(login_url=reverse_lazy("login"))
 def book_add(request, book_id):
 
-    OrderItem.save(Book.objects.get(id=book_id))
+    book = (Book.objects.get(id=book_id))
+    book.shopping_cart = True
+    book.save()
 
     return render(request,
                   'bookMng/book_add.html',
@@ -224,11 +226,35 @@ def book_add(request, book_id):
 # Purchasing books in Shopping Cart
 @login_required(login_url=reverse_lazy("login"))
 def purchase(request):
-    ordered_items = OrderItem.objects.all()
+    books = Book.objects.all()
+    ordered_items_list = []
+    my_sum = 0
+    for book in books:
+        if book.shopping_cart is True :
+            ordered_items_list.append(book)
 
+    for b in ordered_items_list:
+        b.pic_path = b.picture.url[14:]
+        my_sum += b.price
     return render(request,
                   'bookMng/purchase.html',
                   {
                       'item_list': MainMenu.objects.all(),
-                      'ordered_item': ordered_items,
+                      'ordered_items': ordered_items_list,
+                      'sum': my_sum,
+                  })
+
+
+@login_required(login_url=reverse_lazy("login"))
+def my_logout(request):
+    books = Book.objects.all()
+
+    for b in books:
+        b.shopping_cart = False
+        b.save()
+    logout(request)
+    return render(request,
+                  'bookMng/index.html',
+                  {
+                      'item_list': MainMenu.objects.all()
                   })
